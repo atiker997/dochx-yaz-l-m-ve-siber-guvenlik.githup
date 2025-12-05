@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>ATALAY — DOCHX SİBER GÜVENLİK SAVAŞÇILARI</title>
+<style>
+body{
+  margin:0;
+  background:#000;
+  font-family: 'JetBrains Mono', monospace;
+  color:#00ffea;
+  overflow:hidden;
+}
+canvas{
+  position:fixed;
+  width:100vw;height:100vh;
+  z-index:-1;
+}
+
+/* ÜST MENÜ */
+nav{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  z-index:5;
+  background:#000;
+  border-bottom:2px solid #00ffee;
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:8px 0 6px;
+}
+nav a{
+  color:#00ffee;
+  font-size:13px;
+  text-decoration:none;
+  font-weight:bold;
+  padding:6px 10px;
+  border:1px solid #00ffee;
+  border-radius:6px;
+  cursor:pointer;
+  transition:.25s;
+}
+nav a:hover{
+  background:#00ffee;
+  color:#002621;
+  box-shadow:0 0 18px #00fff7;
+}
+
+/* GİRİŞ EKRANI (SENİN TASARIM) */
+#center{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  width:90%;
+}
+
+#center h1{
+  font-size:45px;
+  color:#00fff2;
+  text-shadow:0 0 25px #00f6ff;
+  margin-bottom:15px;
+  letter-spacing:2px;
+  font-weight:900;
+}
+
+#center h2{
+  font-size:26px;
+  color:#00ff9d;
+  font-weight:700;
+  letter-spacing:1.8px;
+  margin-bottom:30px;
+  text-shadow:0 0 18px #00ff96;
+}
+
+/* HİZMETLER LİSTESİ */
+.list-box{
+  background:rgba(0,0,0,0.6);
+  border:2px solid #00ffb3;
+  padding:18px;
+  border-radius:12px;
+  width:65%;
+  margin:0 auto;
+  box-shadow:0 0 35px #00ffd5;
+}
+.list-box p{
+  font-size:18px;
+  color:#66faff;
+  font-weight:600;
+  margin:7px 0;
+  text-shadow:0 0 10px #00e6ff;
+}
+
+/* ÖVGÜ BLOĞU */
+#atalay-name{
+  font-size:33px;
+  color:#0affff;
+  font-weight:900;
+  margin-bottom:20px;
+  text-shadow:0 0 20px #00fff6;
+  text-transform:uppercase;
+}
+.subtext{
+  font-size:19px;
+  color:#78ffae;
+  font-weight:700;
+  text-shadow:0 0 15px #15ff95;
+  margin-bottom:23px;
+  letter-spacing:1px;
+}
+
+/* ALT SAYFALAR / PANELLER */
+.page{
+  position:absolute;
+  top:60px;
+  left:0;
+  width:100%;
+  height:calc(100vh - 60px);
+  display:none;
+  text-align:center;
+  color:#9af9ff;
+  padding-top:20px;
+  overflow:auto;
+}
+.page h1{
+  font-size:24px;
+  margin-bottom:15px;
+  text-shadow:0 0 18px #00fff0;
+}
+
+/* PANEL KUTULARI */
+.panel-box{
+  width:80%;
+  max-width:900px;
+  margin:10px auto 25px auto;
+  background:rgba(0,0,0,0.8);
+  border-radius:10px;
+  border:1px solid #00ffe4;
+  padding:15px;
+  box-shadow:0 0 20px #00ffe455;
+}
+
+/* TERMINAL */
+#terminal{
+  width:80%;
+  max-width:900px;
+  margin:10px auto;
+  background:#020;
+  border:2px solid #00ff90;
+  padding:14px;
+  height:330px;
+  overflow-y:auto;
+  color:#00ffb0;
+  text-align:left;
+  font-size:13px;
+}
+#cmd{
+  width:70%;
+  max-width:600px;
+  padding:10px;
+  border:2px solid #00ff95;
+  background:#000;
+  color:#0f8;
+  font-size:15px;
+  margin-top:10px;
+}
+
+/* LOG BOX */
+#logBox{
+  width:80%;
+  max-width:900px;
+  height:360px;
+  margin:10px auto;
+  background:#001;
+  border:2px solid #00e8ff;
+  color:#00ffea;
+  padding:14px;
+  overflow-y:auto;
+  font-size:13px;
+  text-align:left;
+  white-space:pre-wrap;
+}
+
+/* HARİTA CANVAS */
+#mapCanvas, #worldMap{
+  background:#001;
+  border:2px solid #00ffe5;
+  border-radius:10px;
+}
+
+/* IP PANELI */
+#ip{
+  padding:10px;
+  width:60%;
+  max-width:500px;
+  background:#000;
+  border:2px solid #00ffaa;
+  color:#00ffea;
+  font-size:16px;
+}
+#scanOut{
+  width:80%;
+  max-width:900px;
+  height:320px;
+  margin:15px auto;
+  background:#010;
+  border:2px solid #00ffaa;
+  color:#00ffea;
+  padding:14px;
+  overflow-y:auto;
+  font-size:13px;
+  text-align:left;
+  white-space:pre-wrap;
+}
+
+/* AI */
+#aiBox{
+  width:80%;
+  max-width:900px;
+  margin:10px auto;
+  background:#022;
+  border:2px solid #00fff7;
+  height:330px;
+  overflow-y:auto;
+  padding:14px;
+  font-size:13px;
+  text-align:left;
+  white-space:pre-wrap;
+}
+
+/* İLETİŞİM */
+#msgBox{
+  width:75%;
+  max-width:700px;
+  height:140px;
+  background:#000;
+  border:2px solid #00ffee;
+  color:#00fff0;
+  padding:10px;
+  resize:none;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  #center h1{font-size:32px;}
+  #center h2{font-size:20px;}
+  .list-box{width:90%;}
+  #cmd,#ip{width:85%;}
+}
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<!-- ÜST MENÜ -->
+<nav>
+  <a onclick="showPage('home')">🏛 ANASAYFA</a>
+  <a onclick="showPage('sim')">⚡ TERMİNAL</a>
+  <a onclick="showPage('log')">📡 LOG MOTORU</a>
+  <a onclick="showPage('map')">🛰 TEHDİT HARİTASI</a>
+  <a onclick="showPage('global')">🌍 GLOBAL ATTACK</a>
+  <a onclick="showPage('scan')">🕵 IP TARAMA</a>
+  <a onclick="showPage('ai')">🧠 AI ANALİZ</a>
+  <a onclick="showPage('contact')">📞 İLETİŞİM</a>
+</nav>
+
+<!-- GİRİŞ / ANASAYFA — SENİN VERDİĞİN TASARIM -->
+<div id="center">
+  <div id="atalay-name">ATALAY</div>
+  <div class="subtext">Tek adamlık değil — Tek Sistemlik Güç.</div>
+
+  <h1>DOCHX SİBER GÜVENLİK SAVAŞÇILARI</h1>
+  <h2>Çevrimiçi tehditleri avlayan, dijitali koruyan merkez.</h2>
+
+  <div class="list-box">
+    <p>• WhatsApp — Instagram — Facebook hesap kurtarma & güvenlik</p>
+    <p>• Sosyal medya çalınma önleme — giriş izleme — iki adımlı koruma</p>
+    <p>• Play Store uygulama geliştirme — yazılım üretimi ve satış</p>
+    <p>• Sızma testi — saldırı analizleri — firewall optimizasyonu</p>
+    <p>• Port tarama, log analiz, güvenlik açığı tespiti</p>
+    <p>• Saldırı araçları & siber savunma geliştirme çalışmaları</p>
+    <p>• Profesyonel koruma hizmetleri — VIP güvenlik paneli</p>
+  </div>
+</div>
+
+<!-- ========== ALT PANELLER ========== -->
+
+<!-- SALDIRI TERMİNALİ -->
+<div id="sim" class="page">
+  <h1>⚡ Saldırı Simülasyon Terminali</h1>
+  <div id="terminal">[BOOT] Siber saldırı simülasyon konsolu başlatıldı...</div>
+  <input id="cmd" placeholder="ddos / sql / bruteforce komutlarını dene">
+</div>
+
+<!-- LOG MOTORU -->
+<div id="log" class="page">
+  <h1>📡 Canlı Log & Trafik İzleme Motoru</h1>
+  <pre id="logBox">[LOG] Sistem izleme başlatıldı...</pre>
+</div>
+
+<!-- TEHDİT HARİTASI -->
+<div id="map" class="page">
+  <h1>🛰 Yerel Ağ Tehdit Haritası (Simülasyon)</h1>
+  <canvas id="mapCanvas" width="620" height="380"></canvas>
+</div>
+
+<!-- GLOBAL SALDIRI PANELİ -->
+<div id="global" class="page">
+  <h1>🌍 Global Siber Saldırı İzleme — ATALAY Kontrolde</h1>
+  <canvas id="worldMap" width="650" height="420"></canvas>
+  <pre id="globalLog">[GLOBAL] Dünya çapında izleme başladı...</pre>
+</div>
+
+<!-- IP TARAMA -->
+<div id="scan" class="page">
+  <h1>🕵 IP Tarama Paneli</h1>
+  <input id="ip" placeholder="Hedef IP adresini yaz ve Enter'a bas">
+  <pre id="scanOut"></pre>
+</div>
+
+<!-- AI PANEL -->
+<div id="ai" class="page">
+  <h1>🧠 Yapay Zeka Güvenlik Analizi</h1>
+  <div id="aiBox">AI motoru dinlemede...</div>
+</div>
+
+<!-- İLETİŞİM PANELİ -->
+<div id="contact" class="page">
+  <h1>📞 Bizimle İletişime Geç</h1>
+  <div class="panel-box">
+    <p style="font-size:16px;">Müşteriler ve ekip, tüm taleplerini buradan iletebilir.</p><br>
+
+    <p>📨 E-posta: <a href="mailto:DESTEK@DOCHX.COM" style="color:#00fff0">DESTEK@DOCHX.COM</a></p>
+    <p>📞 Telefon: <a href="tel:+905555555555" style="color:#00fff0">+90 555 555 55 55</a></p>
+    <p>💬 Telegram: <a href="https://t.me/AtalayDochx" target="_blank" style="color:#00fff0">@AtalayDochx</a></p>
+
+    <br><hr style="border-color:#00ffee;width:60%;opacity:0.6;"><br>
+
+    <textarea id="msgBox" placeholder="Mesaj / destek talebi yaz..."></textarea><br><br>
+
+    <button onclick="sendMsg()" 
+      style="padding:10px 18px;background:#00fff2;color:#003634;font-weight:bold;border:none;border-radius:6px;cursor:pointer;">
+      ✉ BİZE GÖNDER 
+    </button>
+
+    <p id="sentText" style="margin-top:15px;color:#00ffae;font-size:15px;display:none;">
+      ✔ Mesaj gönderildi — geri dönüş sağlanacak.
+    </p>
+  </div>
+</div>
+
+<script>
+// MATRIX ARKA PLAN
+var c=document.getElementById("matrix"),ctx=c.getContext("2d");
+c.height=innerHeight;c.width=innerWidth;
+var letters="01 10 11 00 101 110 011 111 000".split("");
+var drops=[];for(var i=0;i<200;i++) drops[i]=1;
+var colors=["#00ff95","#00e0ff","#ff4b6b"];
+
+function draw(){
+  ctx.fillStyle="rgba(0,0,0,0.08)";
+  ctx.fillRect(0,0,c.width,c.height);
+  ctx.font="16px monospace";
+  drops.forEach((y,i)=>{
+    ctx.fillStyle = colors[Math.floor(Math.random()*colors.length)];
+    ctx.fillText(letters[Math.floor(Math.random()*letters.length)],i*10,y*14);
+    if(y*14>c.height&&Math.random()>0.97) drops[i]=0;
+    drops[i]++;
+  });
+}
+setInterval(draw,35);
+
+// SAYFA GEÇİŞ
+function showPage(name){
+  const center = document.getElementById("center");
+  const pages = document.querySelectorAll(".page");
+  if(name === "home"){
+    center.style.display = "block";
+    pages.forEach(p => p.style.display = "none");
+  }else{
+    center.style.display = "none";
+    pages.forEach(p => p.style.display = "none");
+    const target = document.getElementById(name);
+    if(target) target.style.display = "block";
+  }
+}
+
+// TERMINAL KOMUTLARI
+const termEl = document.getElementById("terminal");
+const cmdEl = document.getElementById("cmd");
+if(cmdEl){
+  cmdEl.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){
+      const v = cmdEl.value.trim();
+      if(!v) return;
+      termEl.innerHTML += "<br>&gt; " + v;
+      if(v==="ddos"){
+        termEl.innerHTML += "<br>[⚠] DDoS trafiği simüle edildi, savunma katmanı aktif.";
+      }else if(v==="sql"){
+        termEl.innerHTML += "<br>[🔍] SQL injection taraması başlatıldı.";
+      }else if(v==="bruteforce"){
+        termEl.innerHTML += "<br>[💀] BruteForce saldırı denemesi simüle ediliyor.";
+      }else{
+        termEl.innerHTML += "<br>[?] Komut bilinmiyor. (ddos / sql / bruteforce)";
+      }
+      cmdEl.value="";
+      termEl.scrollTop = termEl.scrollHeight;
+    }
+  });
+}
+
+// LOG MOTORU
+const logBox = document.getElementById("logBox");
+setInterval(()=>{
+  logBox.textContent += "\n["+new Date().toLocaleTimeString()+"] Trafik = "+Math.floor(Math.random()*800)+" paket";
+  logBox.scrollTop = logBox.scrollHeight;
+},1000);
+
+// TEHDİT HARİTASI (Yerel)
+const mapCanvas = document.getElementById("mapCanvas");
+const mctx = mapCanvas.getContext("2d");
+function drawHit(){
+  const x = Math.random()*mapCanvas.width;
+  const y = Math.random()*mapCanvas.height;
+  mctx.fillStyle="#00ffb2";
+  mctx.beginPath();
+  mctx.arc(x,y,5,0,Math.PI*2);
+  mctx.fill();
+}
+setInterval(drawHit,1000);
+
+// GLOBAL SALDIRI PANELİ
+const worldMap = document.getElementById("worldMap");
+const wctx = worldMap.getContext("2d");
+const globalLog = document.getElementById("globalLog");
+function worldAttack(){
+  let x1 = Math.random()*worldMap.width, y1 = Math.random()*worldMap.height;
+  let x2 = Math.random()*worldMap.width, y2 = Math.random()*worldMap.height;
+
+  wctx.strokeStyle="#00ffea88";
+  wctx.lineWidth=2;
+  wctx.beginPath();wctx.moveTo(x1,y1);wctx.lineTo(x2,y2);wctx.stroke();
+
+  wctx.fillStyle="#ff0044";
+  wctx.fillRect(x2-3,y2-3,6,6);
+
+  let msg = "⚠ GLOBAL ATTACK → "+x1.toFixed(0)+","+y1.toFixed(0)+" → "+x2.toFixed(0)+","+y2.toFixed(0);
+  globalLog.textContent+="\n"+msg;
+  globalLog.scrollTop=globalLog.scrollHeight;
+}
+setInterval(worldAttack,2000);
+
+// IP TARAMA
+const ipInput = document.getElementById("ip");
+const scanOut = document.getElementById("scanOut");
+ipInput.addEventListener("keydown",e=>{
+  if(e.key==="Enter"){
+    const target = ipInput.value.trim()||"hedef";
+    scanOut.textContent = "[SCAN] "+target+" için tarama başlatılıyor...\n";
+    setTimeout(()=>{
+      scanOut.textContent += "> 22/tcp  ssh   → açık\n";
+      scanOut.textContent += "> 80/tcp  http  → açık\n";
+      scanOut.textContent += "> 443/tcp https → güçlü\n";
+      scanOut.textContent += "> 3389/tcp rdp  → kapalı\n";
+      scanOut.textContent += "[OK] Tarama tamamlandı.\n";
+      scanOut.scrollTop = scanOut.scrollHeight;
+    },900);
+  }
+});
+
+// AI PANEL
+const aiBox = document.getElementById("aiBox");
+const aiMsgs = [
+  "Firewall durumu stabil.",
+  "DDoS seviyesi düşük.",
+  "SQL injection izi yok.",
+  "Port aktivitesi normal.",
+  "Şüpheli giriş denemesi algılanmadı."
+];
+setInterval(()=>{
+  const m = aiMsgs[Math.floor(Math.random()*aiMsgs.length)];
+  aiBox.textContent += "\n🧠 "+m;
+  aiBox.scrollTop = aiBox.scrollHeight;
+},1500);
+
+// İLETİŞİM MESAJ
+function sendMsg(){
+  document.getElementById("sentText").style.display="block";
+  setTimeout(()=>{document.getElementById("sentText").style.display="none";},4000);
+}
+</script>
+
+</body>
+</html>
